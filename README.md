@@ -1,5 +1,5 @@
 This repository contains the code for 
-_"Decoupling Approach for Solving Linear Quadratic Discrete-Time Games with Application to Consensus Problem"_ submitted for CDC 2022
+_"Decoupling Approach for Solving Linear Quadratic Discrete-Time Games with Application to Consensus Problem"_ submitted for L-CSS letter and CDC 2022
 
 The main code **decoupling_lqdtg.m** contains everything in one file.
 
