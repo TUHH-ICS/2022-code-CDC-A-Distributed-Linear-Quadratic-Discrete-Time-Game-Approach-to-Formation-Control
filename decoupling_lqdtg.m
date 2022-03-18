@@ -1,7 +1,22 @@
+%------
+% Project: Discrete-time Games & MAS
+% Copyright: 
+% License: 
+% References:
+% Authors: P. Aditya and H.Werner
+%------
+
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "Decoupling Approach for Solving LQDTG with Application to Consensus Problem"
+% by Prima Aditya and Herbert Werner
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+% IEEE Conference on Decision and Control, 2022."
+% Author(s): Prima Aditya
+%--------------------------------------------------------------------------------------------
+
 clc;clear all;close all;
-%% code for paper: Decoupling Approach for Solving Linear Quadratic
-%  Discrete-Time Games with Application to Consensus Problem 
-%  prima.aditya@tuhh.de
 
 n = 2;     %dimensional plane
 I = eye(n); 
