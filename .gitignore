@@ -1,0 +1,4 @@
+This repository contains the simulation code to reproduce the figures presented in
+P. Aditya and H. Werner, "Decoupling Approach for Solving Linear Quadratic Discrete-Time Games with Application to Consensus Problem ", CDC Conference, 2022
+The code has the main code decoupling_lqdtg that contains everything in one file
+The supplementary files added in separate folders  
