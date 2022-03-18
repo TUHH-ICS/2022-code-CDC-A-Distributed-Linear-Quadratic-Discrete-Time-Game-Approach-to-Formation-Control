@@ -168,45 +168,67 @@ end
 
 Tot = (tf*10)+(Np*10);
 
-%% Regulator section
-
-% %relative positions and relative control inputs - Figure 2
-figure('Name', 'Relative position and control', 'NumberTitle', 'off')
-subplot(2,2,1)
+%% Regulator section - Figure 2
+figure('Name', 'Relative state and control', 'NumberTitle', 'off')
+subplot(2,3,1)
 plot(1:Tot+1,z(1,:),1:Tot+1,z(3,:),1:Tot+1,z(5,:),1:Tot+1,z(7,:),1:Tot+1,z(9,:),1:Tot+1,z(11,:),'linewidth',1.8)
 yline(0,'--k')
 legend('$p_x^1 - p_x^2$','$p_x^1 - p_x^3$','$p_x^2 - p_x^3$','$p_x^4 - p_x^3$','$p_x^1 - p_x^4$','$p_x^2 - p_x^4$','fontsize',12,'interpreter','latex')
 xlim([1 Tot+1])
 xlabel('time-steps','fontsize',12)
-ylabel('Relative position (x)','fontsize',12)
+ylabel('x-axis','fontsize',12)
+title('Relative positions')
 grid on
 set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,2,2)
-plot(1:Tot+1,z(2,:),1:Tot+1,z(4,:),1:Tot+1,z(6,:),1:Tot+1,z(8,:),1:Tot+1,z(10,:),1:Tot+1,z(12,:),'linewidth',1.8)
+subplot(2,3,2)
+plot(1:Tot+1,z(13,:),1:Tot+1,z(15,:),1:Tot+1,z(17,:),1:Tot+1,z(19,:),1:Tot+1,z(21,:),1:Tot+1,z(23,:),'linewidth',1.8)
 yline(0,'--k')
-legend('$p_y^1 - p_y^2$','$p_y^1 - p_y^3$','$p_y^2 - p_y^3$','$p_y^4 - p_y^3$','$p_y^1 - p_y^4$','$p_y^2 - p_y^4$','fontsize',12,'interpreter','latex')
+legend('$v_x^1 - v_x^2$','$v_x^1 - v_x^3$','$v_x^2 - v_x^3$','$v_x^4 - v_x^3$','$v_x^1 - v_x^4$','$v_x^2 - v_x^4$','fontsize',12,'interpreter','latex')
 xlim([1 Tot+1])
 xlabel('time-steps','fontsize',12)
-ylabel('Relative position (y)','fontsize',12)
+ylabel('x-axis','fontsize',12)
+title('Relative velocities')
 grid on
 set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,2,3)
+subplot(2,3,3)
 plot(1:Tot,a(1,:),1:Tot,a(3,:),1:Tot,a(5,:),1:Tot,a(7,:),1:Tot,a(9,:),1:Tot,a(11,:),'linewidth',1.8)
 yline(0,'--k')
 legend('$u_x^1 - u_x^2$','$u_x^1 - u_x^3$','$u_x^2 - u_x^3$','$u_x^4 - u_x^3$','$u_x^1 - u_x^4$','$u_x^2 - u_x^4$','fontsize',12,'interpreter','latex')
 xlim([1 Tot])
 xlabel('time-steps','fontsize',12)
-ylabel('Relative control (x)','fontsize',12)
+ylabel('x-axis','fontsize',12)
+title('Relative controls')
 grid on
 xlim([1 Tot])
 set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,2,4)
+subplot(2,3,4)
+plot(1:Tot+1,z(2,:),1:Tot+1,z(4,:),1:Tot+1,z(6,:),1:Tot+1,z(8,:),1:Tot+1,z(10,:),1:Tot+1,z(12,:),'linewidth',1.8)
+yline(0,'--k')
+legend('$p_y^1 - p_y^2$','$p_y^1 - p_y^3$','$p_y^2 - p_y^3$','$p_y^4 - p_y^3$','$p_y^1 - p_y^4$','$p_y^2 - p_y^4$','fontsize',12,'interpreter','latex')
+xlim([1 Tot+1])
+xlabel('time-steps','fontsize',12)
+ylabel('y-axis','fontsize',12)
+title('Relative positions')
+grid on
+set(gca,'color',[0.9,0.9,0.9]);
+subplot(2,3,5)
+plot(1:Tot+1,z(14,:),1:Tot+1,z(16,:),1:Tot+1,z(18,:),1:Tot+1,z(20,:),1:Tot+1,z(22,:),1:Tot+1,z(24,:),'linewidth',1.8)
+yline(0,'--k')
+legend('$v_y^1 - v_y^2$','$v_y^1 - v_y^3$','$v_y^2 - v_y^3$','$v_y^4 - v_y^3$','$v_y^1 - v_y^4$','$v_y^2 - v_y^4$','fontsize',12,'interpreter','latex')
+xlim([1 Tot+1])
+xlabel('time-steps','fontsize',12)
+ylabel('y-axis','fontsize',12)
+title('Relative velocities')
+grid on
+set(gca,'color',[0.9,0.9,0.9]);
+subplot(2,3,6)
 plot(1:Tot,a(2,:),1:Tot,a(4,:),1:Tot,a(6,:),1:Tot,a(8,:),1:Tot,a(10,:),1:Tot,a(12,:),'linewidth',1.8)
 yline(0,'--k')
 legend('$u_y^1 - u_y^2$','$u_y^1 - u_y^3$','$u_y^2 - u_y^3$','$u_y^4 - u_y^3$','$u_y^1 - u_y^4$','$u_y^2 - u_y^4$','fontsize',12,'interpreter','latex')
 xlim([1 Tot])
 xlabel('time-steps','fontsize',12)
-ylabel('Relative control (y)','fontsize',12)
+ylabel('y-axis','fontsize',12)
+title('Relative controls')
 grid on
 xlim([1 Tot])
 set(gca,'color',[0.9,0.9,0.9]);
