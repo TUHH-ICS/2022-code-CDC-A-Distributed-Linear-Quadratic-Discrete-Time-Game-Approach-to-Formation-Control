@@ -1,35 +1,25 @@
-%---------------------------------------------------------------------------------------------
-% For Paper, 
-% "Decoupling Approach for Solving LQDTG with Application to Consensus Problem"
-% by Prima Aditya and Herbert Werner
-% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
-% Licensed under the GPLv3. See LICENSE in the project root for license information.
-% L-CSS letter and IEEE Conference on Decision and Control, 2022."
-% Author(s): Prima Aditya 
-%--------------------------------------------------------------------------------------------
-
 clc;clear all;close all;
+%% code for paper: A Distributed LQDTG to Formation Control
+%  prima.aditya@tuhh.de
 
-n = 2;     %dimensional plane
+n = 2;          %dimensional plane
 I = eye(n); 
-N = 4;     %amount of agents
-r = n*N;   %adjust the size
-M = 6;     %number of edges
-h = n*M;   %adjust the size
-
-tf   = 10;       %finite time for open-loop horizon
+N = 4;          %amount of agents
+r = n*N;        %adjust the size
+M = 6;          %number of edges
+h = n*M;        %adjust the size
+tf   = 10;      %finite time for open-loop horizon
 Np   = 0;       %prediction horizon
 step = tf*10;
 dt   = tf/step; %step size/ sampling time
-
 eta = 5;
-
+%incidence matrix
 D = [-1 -1  0  0 -1  0;
       1  0 -1  0  0 -1;
       0  1  1  1  0  0;
       0  0  0 -1  1  1];
 miu = 1;
-%% Problem 1
+%% Problem 1 - Nash strategy
 A  = [zeros(r), eye(r);zeros(r), zeros(r)];
 F  = eye(2*r) + dt*A;
 mu = [1  1  0  0  1  0;
@@ -64,7 +54,7 @@ v2  = [0; 1];    v4  = [0; 1];
 po  = [p1;p2;p3;p4];
 vo  = [v1;v2;v3;v4];
 
-%% Problem 2
+%% Arranging Problem 1 as a single (coupled) Riccati problem
 Wn   = miu*eye(M);
 Ln   = D*Wn*D';
 Qn   = dt*[kron(Ln,I), zeros(r); zeros(r), kron(Ln,I)];
@@ -75,7 +65,7 @@ Bn   = [zeros(r);eye(r)];
 %exact discretization
 Gn   = dt*Bn + (dt^2)/2*A*Bn;
 
-%% Problem 3
+%% Arranging Problem 2 as a single Riccati problem
 %matrix coefficients for es
 At    = [zeros(h), eye(h);zeros(h), zeros(h)];
 Ft    = eye(2*h) + dt*At; %Euler method
@@ -118,14 +108,14 @@ for idx=1:Np+1%indexing for prediction horizon
         xn(:,idxn)   = xe{idx-1}(:,idxn);
         xhat(:,idxn) = xf{idx-1}(:,idxn);
     end
-    %define the moving finite time
+    %define the moving finite time horizon
     T = (idx-1)*10+ step;
     %initialize the Riccati solution to be solved backward 
     for l=1:N %for amount of robots 
         P(:,:,l,T+1) = Qf(:,:,l); %initial Riccati for Problem 1
     end
-    Pn(:,:,T+1) = Qfn; %initial Riccati for Problem 2
-    Pt(:,:,T+1) = Qft; %initial Riccati for Problem 3
+    Pn(:,:,T+1) = Qfn; %initial Riccati for Problem 1a
+    Pt(:,:,T+1) = Qft; %initial Riccati for Problem 2
     %solve Problem 1
     for k = 1:T
         %-------------------------------------------------------
@@ -180,7 +170,7 @@ figure('Name', 'Relative state and control', 'NumberTitle', 'off')
 subplot(2,3,1)
 plot(1:Tot+1,z(1,:),1:Tot+1,z(3,:),1:Tot+1,z(5,:),1:Tot+1,z(7,:),1:Tot+1,z(9,:),1:Tot+1,z(11,:),'linewidth',1.8)
 yline(0,'--k')
-legend('$p_x^1 - p_x^2$','$p_x^1 - p_x^3$','$p_x^2 - p_x^3$','$p_x^4 - p_x^3$','$p_x^1 - p_x^4$','$p_x^2 - p_x^4$','fontsize',12,'interpreter','latex')
+legend('$q_x^1$','$q_x^2$','$q_x^3$','$q_x^4$','$q_x^5$','$q_x^6$','fontsize',12,'interpreter','latex')
 xlim([1 Tot+1])
 xlabel('time-steps','fontsize',12)
 ylabel('x-axis','fontsize',12)
@@ -190,7 +180,7 @@ set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,3,2)
 plot(1:Tot+1,z(13,:),1:Tot+1,z(15,:),1:Tot+1,z(17,:),1:Tot+1,z(19,:),1:Tot+1,z(21,:),1:Tot+1,z(23,:),'linewidth',1.8)
 yline(0,'--k')
-legend('$v_x^1 - v_x^2$','$v_x^1 - v_x^3$','$v_x^2 - v_x^3$','$v_x^4 - v_x^3$','$v_x^1 - v_x^4$','$v_x^2 - v_x^4$','fontsize',12,'interpreter','latex')
+legend('$w_x^1$','$w_x^2$','$w_x^3$','$w_x^4$','$w_x^5$','$w_x^6$','fontsize',12,'interpreter','latex')
 xlim([1 Tot+1])
 xlabel('time-steps','fontsize',12)
 ylabel('x-axis','fontsize',12)
@@ -200,7 +190,7 @@ set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,3,3)
 plot(1:Tot,a(1,:),1:Tot,a(3,:),1:Tot,a(5,:),1:Tot,a(7,:),1:Tot,a(9,:),1:Tot,a(11,:),'linewidth',1.8)
 yline(0,'--k')
-legend('$u_x^1 - u_x^2$','$u_x^1 - u_x^3$','$u_x^2 - u_x^3$','$u_x^4 - u_x^3$','$u_x^1 - u_x^4$','$u_x^2 - u_x^4$','fontsize',12,'interpreter','latex')
+legend('$a_x^1$','$a_x^2$','$a_x^3$','$a_x^4$','$a_x^5$','$a_x^6$','fontsize',12,'interpreter','latex')
 xlim([1 Tot])
 xlabel('time-steps','fontsize',12)
 ylabel('x-axis','fontsize',12)
@@ -211,7 +201,7 @@ set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,3,4)
 plot(1:Tot+1,z(2,:),1:Tot+1,z(4,:),1:Tot+1,z(6,:),1:Tot+1,z(8,:),1:Tot+1,z(10,:),1:Tot+1,z(12,:),'linewidth',1.8)
 yline(0,'--k')
-legend('$p_y^1 - p_y^2$','$p_y^1 - p_y^3$','$p_y^2 - p_y^3$','$p_y^4 - p_y^3$','$p_y^1 - p_y^4$','$p_y^2 - p_y^4$','fontsize',12,'interpreter','latex')
+legend('$q_y^1$','$q_y^2$','$q_y^3$','$q_y^4$','$q_y^5$','$q_y^6$','fontsize',12,'interpreter','latex')
 xlim([1 Tot+1])
 xlabel('time-steps','fontsize',12)
 ylabel('y-axis','fontsize',12)
@@ -221,7 +211,7 @@ set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,3,5)
 plot(1:Tot+1,z(14,:),1:Tot+1,z(16,:),1:Tot+1,z(18,:),1:Tot+1,z(20,:),1:Tot+1,z(22,:),1:Tot+1,z(24,:),'linewidth',1.8)
 yline(0,'--k')
-legend('$v_y^1 - v_y^2$','$v_y^1 - v_y^3$','$v_y^2 - v_y^3$','$v_y^4 - v_y^3$','$v_y^1 - v_y^4$','$v_y^2 - v_y^4$','fontsize',12,'interpreter','latex')
+legend('$w_y^1$','$w_y^2$','$w_y^3$','$w_y^4$','$w_y^5$','$w_y^6$','fontsize',12,'interpreter','latex')
 xlim([1 Tot+1])
 xlabel('time-steps','fontsize',12)
 ylabel('y-axis','fontsize',12)
@@ -231,7 +221,7 @@ set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,3,6)
 plot(1:Tot,a(2,:),1:Tot,a(4,:),1:Tot,a(6,:),1:Tot,a(8,:),1:Tot,a(10,:),1:Tot,a(12,:),'linewidth',1.8)
 yline(0,'--k')
-legend('$u_y^1 - u_y^2$','$u_y^1 - u_y^3$','$u_y^2 - u_y^3$','$u_y^4 - u_y^3$','$u_y^1 - u_y^4$','$u_y^2 - u_y^4$','fontsize',12,'interpreter','latex')
+legend('$a_y^1$','$a_y^2$','$a_y^3$','$a_y^4$','$a_y^5$','$a_y^6$','fontsize',12,'interpreter','latex')
 xlim([1 Tot])
 xlabel('time-steps','fontsize',12)
 ylabel('y-axis','fontsize',12)
@@ -316,7 +306,7 @@ set(gca,'color',[0.9,0.9,0.9]);
 figure('Name', 'Comparison of optimal control signals', 'NumberTitle', 'off')
 subplot(2,4,1)
 plot(1:Tot,un(1,:),'-b',1:Tot,uhat(1,:),'--r','linewidth',1.5)
-legend('Nash','Decoupling','fontsize',11,'location','best')
+legend('Nash','Distributed','fontsize',11,'location','best')
 title('Agent 1 (x-axis)','fontweight','bold','fontsize',12)
 xlim([1 Tot])
 grid on
@@ -325,7 +315,7 @@ ylabel('control inputs','fontsize',12)
 set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,4,2)
 plot(1:Tot,un(3,:),'-b',1:Tot,uhat(3,:),'--r','linewidth',1.5)
-legend('Nash','Decoupling','fontsize',11,'location','best')
+legend('Nash','Distributed','fontsize',11,'location','best')
 title('Agent 2 (x-axis)','fontweight','bold','fontsize',12)
 xlim([1 Tot])
 grid on
@@ -333,7 +323,7 @@ xlabel('time steps','fontsize',12)
 set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,4,3)
 plot(1:Tot,un(5,:),'-b',1:Tot,uhat(5,:),'--r','linewidth',1.5)
-legend('Nash','Decoupling','fontsize',11,'location','best')
+legend('Nash','Distributed','fontsize',11,'location','best')
 title('Agent 3 (x-axis)','fontweight','bold','fontsize',12)
 xlim([1 Tot])
 grid on
@@ -341,7 +331,7 @@ xlabel('time steps','fontsize',12)
 set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,4,4)
 plot(1:Tot,un(7,:),'-b',1:Tot,uhat(7,:),'--r','linewidth',1.5)
-legend('Nash','Decoupling','fontsize',11,'location','best')
+legend('Nash','Distributed','fontsize',11,'location','best')
 title('Agent 4 (x-axis)','fontweight','bold','fontsize',12)
 xlim([1 Tot])
 grid on
@@ -359,7 +349,7 @@ xlabel('time steps','fontsize',12)
 set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,4,6)
 plot(1:Tot,un(4,:),'-b',1:Tot,uhat(4,:),'--r','linewidth',1.5)
-legend('Nash','Decoupling','fontsize',11,'location','best')
+legend('Nash','Distributed','fontsize',11,'location','best')
 title('Agent 2 (y-axis)','fontweight','bold','fontsize',12)
 xlim([1 (tf/dt)-1])
 grid on
@@ -367,7 +357,7 @@ xlabel('time steps','fontsize',12)
 set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,4,7)
 plot(1:Tot,un(6,:),'-b',1:Tot,uhat(6,:),'--r','linewidth',1.5)
-legend('Nash','Decoupling','fontsize',11,'location','best')
+legend('Nash','Distributed','fontsize',11,'location','best')
 title('Agent 3 (y-axis)','fontweight','bold','fontsize',12)
 xlim([1 (tf/dt)-1])
 grid on
@@ -375,7 +365,7 @@ xlabel('time steps','fontsize',12)
 set(gca,'color',[0.9,0.9,0.9]);
 subplot(2,4,8)
 plot(1:Tot,un(8,:),'-b',1:Tot,uhat(8,:),'--r','linewidth',1.5)
-legend('Nash','Decoupling','fontsize',11,'location','best')
+legend('Nash','Distributed','fontsize',11,'location','best')
 title('Agent 4 (y-axis)','fontweight','bold','fontsize',12)
 xlim([1 (tf/dt)-1])
 grid on
@@ -415,7 +405,7 @@ text(4.3,5.2,ag3,'Fontsize',12)
 text(4.2,0.75,ag4,'Fontsize',12)
 plot(xn(1,1),xn(2,1),'ob',xn(3,1),xn(4,1),'ob',xn(5,1),xn(6,1),'ob',xn(7,1),xn(8,1),'ob','linewidth',5)
 plot(xn(1,end),xn(2,end),'^k',xn(3,end),xn(4,end),'^k',xn(5,end),xn(6,end),'^k',xn(7,end),xn(8,end),'^k','linewidth',5)
-legend('Nash strategy','Decoupling approach','fontsize',12);
+legend('Nash strategy','Distributed approach','fontsize',12);
 xlabel('x-axis','fontsize',12)
 ylabel('y-axis','fontsize',12)
 grid on
