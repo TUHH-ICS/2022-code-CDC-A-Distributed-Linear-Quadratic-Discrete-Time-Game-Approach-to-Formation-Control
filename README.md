@@ -2,7 +2,7 @@
 
 ## General
 This repository contains an implementation of the algorithms and simulations described in 
-> Prima Aditya and Herbert Werner, "A Distributed Linear Quadratic Discrete-Time Game Approach to Multi-Agent Consensus"_ submitted for CDC 2022
+> Prima Aditya and Herbert Werner, "A Distributed Linear Quadratic Discrete-Time Game Approach to Multi-Agent Consensus" submitted for CDC 2022
 
 ## Simulation
 The main code `decoupling_lqdtg.m` contains everything in one file.
