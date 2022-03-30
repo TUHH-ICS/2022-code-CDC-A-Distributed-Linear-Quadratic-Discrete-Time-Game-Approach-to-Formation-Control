@@ -1,5 +1,5 @@
 This repository contains the code for 
-_"A Distributed Linear Quadratic Discrete-Time Game Approach to Formation Control"_ submitted for L-CSS letter and CDC 2022
+_"A Distributed Linear Quadratic Discrete-Time Game Approach to Formation Control"_ submitted for CDC 2022
 
 The main code **decoupling_lqdtg.m** contains everything in one file.
 
