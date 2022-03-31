@@ -12,7 +12,7 @@ tf   = 10;      %finite time for open-loop horizon
 Np   = 0;       %prediction horizon
 step = tf*10;
 dt   = tf/step; %step size/ sampling time
-eta = 5;
+eta = 10;
 %incidence matrix
 D = [-1 -1  0  0 -1  0;
       1  0 -1  0  0 -1;
@@ -72,7 +72,7 @@ Ft    = eye(2*h) + dt*At; %Euler method
 mut   = N*eye(M); %to define positive weights of each agent -> W
 Qt    = dt*kron(kron(eye(2),mut),eye(n));
 Rt    = dt*eye(n*M);
-Qft   = eta*Qt;
+% Qft   = N*eta*Qt;
 %matrix coefficients for vs
 Bt    = [zeros(h);eye(h)];
 %exact discretization
@@ -115,6 +115,7 @@ for idx=1:Np+1%indexing for prediction horizon
         P(:,:,l,T+1) = Qf(:,:,l); %initial Riccati for Problem 1
     end
     Pn(:,:,T+1) = Qfn; %initial Riccati for Problem 1a
+    [Qft, Kft, Eige] = idare(Ft,Gt,Qt,Rt);
     Pt(:,:,T+1) = Qft; %initial Riccati for Problem 2
     %solve Problem 1
     for k = 1:T
@@ -156,6 +157,9 @@ for idx=1:Np+1%indexing for prediction horizon
              uhat(:,:,k) = Phiai * a(:,k);
         end
         xhat(:,k+1) = F * xhat(:,k) +G(:,1:2)*uhat(1:2,k) + G(:,3:4)*uhat(3:4,k) + G(:,5:6)*uhat(5:6,k) + G(:,7:8)*uhat(7:8,k) ;
+        %calculate the receding stability equation (
+        term1 = (Ft + Gt*Kt(:,:,end))' * Qft * (Ft + Gt*Kt(:,:,end)) - Qft;
+        term2 = -Qt - Kt(:,:,end)'*Rt*Kt(:,:,end);
     end
     xd{idx} = x;
     xe{idx} = xn;
@@ -166,8 +170,8 @@ end
 Tot = (tf*10)+(Np*10);
 
 %% Regulator section - Figure 2
-figure('Name', 'Relative state and control', 'NumberTitle', 'off')
-subplot(2,3,1)
+figure('Name', 'Relative positions', 'NumberTitle', 'off')
+subplot(2,1,1)
 plot(1:Tot+1,z(1,:),1:Tot+1,z(3,:),1:Tot+1,z(5,:),1:Tot+1,z(7,:),1:Tot+1,z(9,:),1:Tot+1,z(11,:),'linewidth',1.8)
 yline(0,'--k')
 legend('$q_x^1$','$q_x^2$','$q_x^3$','$q_x^4$','$q_x^5$','$q_x^6$','fontsize',12,'interpreter','latex')
@@ -177,28 +181,7 @@ ylabel('x-axis','fontsize',12)
 title('Relative positions')
 grid on
 set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,3,2)
-plot(1:Tot+1,z(13,:),1:Tot+1,z(15,:),1:Tot+1,z(17,:),1:Tot+1,z(19,:),1:Tot+1,z(21,:),1:Tot+1,z(23,:),'linewidth',1.8)
-yline(0,'--k')
-legend('$w_x^1$','$w_x^2$','$w_x^3$','$w_x^4$','$w_x^5$','$w_x^6$','fontsize',12,'interpreter','latex')
-xlim([1 Tot+1])
-xlabel('time-steps','fontsize',12)
-ylabel('x-axis','fontsize',12)
-title('Relative velocities')
-grid on
-set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,3,3)
-plot(1:Tot,a(1,:),1:Tot,a(3,:),1:Tot,a(5,:),1:Tot,a(7,:),1:Tot,a(9,:),1:Tot,a(11,:),'linewidth',1.8)
-yline(0,'--k')
-legend('$a_x^1$','$a_x^2$','$a_x^3$','$a_x^4$','$a_x^5$','$a_x^6$','fontsize',12,'interpreter','latex')
-xlim([1 Tot])
-xlabel('time-steps','fontsize',12)
-ylabel('x-axis','fontsize',12)
-title('Relative controls')
-grid on
-xlim([1 Tot])
-set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,3,4)
+subplot(2,1,2)
 plot(1:Tot+1,z(2,:),1:Tot+1,z(4,:),1:Tot+1,z(6,:),1:Tot+1,z(8,:),1:Tot+1,z(10,:),1:Tot+1,z(12,:),'linewidth',1.8)
 yline(0,'--k')
 legend('$q_y^1$','$q_y^2$','$q_y^3$','$q_y^4$','$q_y^5$','$q_y^6$','fontsize',12,'interpreter','latex')
@@ -208,7 +191,19 @@ ylabel('y-axis','fontsize',12)
 title('Relative positions')
 grid on
 set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,3,5)
+
+figure('Name', 'Relative velocities', 'NumberTitle', 'off')
+subplot(2,1,1)
+plot(1:Tot+1,z(13,:),1:Tot+1,z(15,:),1:Tot+1,z(17,:),1:Tot+1,z(19,:),1:Tot+1,z(21,:),1:Tot+1,z(23,:),'linewidth',1.8)
+yline(0,'--k')
+legend('$w_x^1$','$w_x^2$','$w_x^3$','$w_x^4$','$w_x^5$','$w_x^6$','fontsize',12,'interpreter','latex')
+xlim([1 Tot+1])
+xlabel('time-steps','fontsize',12)
+ylabel('x-axis','fontsize',12)
+title('Relative velocities')
+grid on
+set(gca,'color',[0.9,0.9,0.9]);
+subplot(2,1,2)
 plot(1:Tot+1,z(14,:),1:Tot+1,z(16,:),1:Tot+1,z(18,:),1:Tot+1,z(20,:),1:Tot+1,z(22,:),1:Tot+1,z(24,:),'linewidth',1.8)
 yline(0,'--k')
 legend('$w_y^1$','$w_y^2$','$w_y^3$','$w_y^4$','$w_y^5$','$w_y^6$','fontsize',12,'interpreter','latex')
@@ -218,88 +213,30 @@ ylabel('y-axis','fontsize',12)
 title('Relative velocities')
 grid on
 set(gca,'color',[0.9,0.9,0.9]);
-subplot(2,3,6)
+
+figure('Name', 'Relative controls', 'NumberTitle', 'off')
+subplot(2,1,1)
+plot(1:Tot,a(1,:),1:Tot,a(3,:),1:Tot,a(5,:),1:Tot,a(7,:),1:Tot,a(9,:),1:Tot,a(11,:),'linewidth',1.8)
+yline(0,'--k')
+legend('$a_x^1$','$a_x^2$','$a_x^3$','$a_x^4$','$a_x^5$','$a_x^6$','fontsize',12,'interpreter','latex')
+xlim([1 Tot])
+xlabel('time-steps','fontsize',12)
+ylabel('x-axis','fontsize',12)
+title('Relative control inputs')
+grid on
+xlim([1 Tot])
+set(gca,'color',[0.9,0.9,0.9]);
+subplot(2,1,2)
 plot(1:Tot,a(2,:),1:Tot,a(4,:),1:Tot,a(6,:),1:Tot,a(8,:),1:Tot,a(10,:),1:Tot,a(12,:),'linewidth',1.8)
 yline(0,'--k')
 legend('$a_y^1$','$a_y^2$','$a_y^3$','$a_y^4$','$a_y^5$','$a_y^6$','fontsize',12,'interpreter','latex')
 xlim([1 Tot])
 xlabel('time-steps','fontsize',12)
 ylabel('y-axis','fontsize',12)
-title('Relative controls')
+title('Relative control inputs')
 grid on
 xlim([1 Tot])
 set(gca,'color',[0.9,0.9,0.9]);
-
-% % %relative dynamics of control inputs
-% figure('Name', 'Relative acceleration control input', 'NumberTitle', 'off')
-% subplot(2,1,1)
-% plot(1:Tot,a(1,:),1:Tot,a(3,:),1:Tot,a(5,:),1:Tot,a(7,:),1:Tot,a(9,:),1:Tot,a(11,:),'linewidth',1.8)
-% yline(0,'--k')
-% legend('$u_x^1 - u_x^2$','$u_x^1 - u_x^3$','$u_x^2 - u_x^3$','$u_x^4 - u_x^3$','$u_x^1 - u_x^4$','$u_x^2 - u_x^4$','fontsize',12,'interpreter','latex')
-% xlim([1 Tot])
-% xlabel('time-steps','fontsize',12)
-% ylabel('Relative control','fontsize',12)
-% % title('Relative acceleration control input in x direction')
-% grid on
-% xlim([1 Tot])
-% set(gca,'color',[0.9,0.9,0.9]);
-% subplot(2,1,2)
-% plot(1:Tot,a(2,:),1:Tot,a(4,:),1:Tot,a(6,:),1:Tot,a(8,:),1:Tot,a(10,:),1:Tot,a(12,:),'linewidth',1.8)
-% yline(0,'--k')
-% legend('$u_y^1 - u_y^2$','$u_y^1 - u_y^3$','$u_y^2 - u_y^3$','$u_y^4 - u_y^3$','$u_y^1 - u_y^4$','$u_y^2 - u_y^4$','fontsize',12,'interpreter','latex')
-% xlim([1 Tot])
-% xlabel('time-steps','fontsize',12)
-% ylabel('Relative control','fontsize',12)
-% % title('Relative acceleration control input in y direction')
-% grid on
-% xlim([1 Tot])
-% set(gca,'color',[0.9,0.9,0.9]);
-% 
-% %relative dynamics of position
-% figure('Name', 'Relative position', 'NumberTitle', 'off')
-% subplot(2,1,1)
-% plot(1:Tot+1,z(1,:),1:Tot+1,z(3,:),1:Tot+1,z(5,:),1:Tot+1,z(7,:),1:Tot+1,z(9,:),1:Tot+1,z(11,:),'linewidth',1.8)
-% yline(0,'--k')
-% legend('$p_x^1 - p_x^2$','$p_x^1 - p_x^3$','$p_x^2 - p_x^3$','$p_x^4 - p_x^3$','$p_x^1 - p_x^4$','$p_x^2 - p_x^4$','fontsize',12,'interpreter','latex')
-% xlim([1 Tot+1])
-% xlabel('time-steps','fontsize',12)
-% ylabel('Relative position','fontsize',12)
-% % title('Relative dynamics of position in x direction')
-% grid on
-% set(gca,'color',[0.9,0.9,0.9]);
-% subplot(2,1,2)
-% plot(1:Tot+1,z(2,:),1:Tot+1,z(4,:),1:Tot+1,z(6,:),1:Tot+1,z(8,:),1:Tot+1,z(10,:),1:Tot+1,z(12,:),'linewidth',1.8)
-% yline(0,'--k')
-% legend('$p_y^1 - p_y^2$','$p_y^1 - p_y^3$','$p_y^2 - p_y^3$','$p_y^4 - p_y^3$','$p_y^1 - p_y^4$','$p_y^2 - p_y^4$','fontsize',12,'interpreter','latex')
-% xlim([1 Tot+1])
-% xlabel('time-steps','fontsize',12)
-% ylabel('Relative position','fontsize',12)
-% % title('Relative dynamics of position in y direction')
-% grid on
-% set(gca,'color',[0.9,0.9,0.9]);
-% 
-% % %relative dynamics of velocity
-% figure('Name', 'Relative velocity', 'NumberTitle', 'off')
-% subplot(2,1,1)
-% plot(1:Tot+1,z(13,:),1:Tot+1,z(15,:),1:Tot+1,z(17,:),1:Tot+1,z(19,:),1:Tot+1,z(21,:),1:Tot+1,z(23,:),'linewidth',1.8)
-% yline(0,'--k')
-% legend('$v_x^1 - v_x^2$','$v_x^1 - v_x^3$','$v_x^2 - v_x^3$','$v_x^4 - v_x^3$','$v_x^1 - v_x^4$','$v_x^2 - v_x^4$','fontsize',12,'interpreter','latex')
-% xlim([1 Tot+1])
-% xlabel('time-steps','fontsize',12)
-% ylabel('Relative velocity','fontsize',12)
-% % title('Relative dynamics of velocity in x direction')
-% grid on
-% set(gca,'color',[0.9,0.9,0.9]);
-% subplot(2,1,2)
-% plot(1:Tot+1,z(14,:),1:Tot+1,z(16,:),1:Tot+1,z(18,:),1:Tot+1,z(20,:),1:Tot+1,z(22,:),1:Tot+1,z(24,:),'linewidth',1.8)
-% yline(0,'--k')
-% legend('$v_y^1 - v_y^2$','$v_y^1 - v_y^3$','$v_y^2 - v_y^3$','$v_y^4 - v_y^3$','$v_y^1 - v_y^4$','$v_y^2 - v_y^4$','fontsize',12,'interpreter','latex')
-% xlim([1 Tot+1])
-% xlabel('time-steps','fontsize',12)
-% ylabel('Relative velocity','fontsize',12)
-% % title('Relative dynamics of velocity in y direction')
-% grid on
-% set(gca,'color',[0.9,0.9,0.9]);
 
 %% Comparison of Nash and optimal solution from decoupling framework
 %to plot control signals - Figure 3
