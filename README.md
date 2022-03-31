@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6402300.svg)](https://doi.org/10.5281/zenodo.6402300) Add to Citavi project by DOI
 # 2022-code-CDC-A-Distributed-Linear-Quadratic-Discrete-Time-Game-Approach-to-Multi-Agent-Consensus
 
 ## General
