@@ -81,7 +81,7 @@ Phiai = pinv(Phia);
 
 alpha   = 0.1;
 
-Iter    = 2; 
+Iter    = 50; 
 % Iter    = 200; %for receding horizon
 In      = eye(N*n);
 u0      = zeros(r,1);
@@ -185,7 +185,7 @@ end
 
 Tot = (tf*10)+(Np*10);
 %% Regulator section - Figure 2
-figure('Name', 'Relative positions', 'NumberTitle', 'off')
+figure('Name', 'Relative in x', 'NumberTitle', 'off')
 subplot(3,1,1)
 plot(1:Tot+1,z(1,:),1:Tot+1,z(3,:),1:Tot+1,z(5,:),1:Tot+1,z(7,:),'linewidth',1.8)
 yline(0,'--k');
@@ -214,63 +214,39 @@ ylabel('x-axis','fontsize',12)
 title('Relative control inputs')
 grid on
 xlim([1 Tot])
-%%
-% Agent 1 for iteration Iter = 2;
-fig = figure(99);clf;
-ax  = axes;
-plot(ax,udata(1,:),'*b')
-hold on
-for i = 1:length(upinv(1,:))
-    plot(ax,(Iter+1)*i,upinv(1,i),'xr','linewidth',5);
-end
-grid on
-xlabel('Time/ iterations')
-ylabel('Control input of Agent 1')
-legend('Distributed approach','Centralized solution','fontsize',12,'location','southeast');
-xlim([0 200])
-% create a new axes object (you could also get the active axes object via 'gca')
-% define Name-Value pairs for the zoom_plot function:
-% Name-Value pairs for the axes:
-options.axes.Names = {'Position','XLim'};
-options.axes.Values = {[.5 .4 .35 .35],[20,40]};
-% Name-Value pairs for the rectangle:
-options.rectangle.Names = {};
-options.rectangle.Values = {};
-% Name-Value pairs for the arrows:
-options.arrows.Names = {'HeadLength','HeadWidth'};
-options.arrows.Values = {8,8};
-% call the function with options:
-[zoom_utils] = zoom_plot(ax,options);
 
-% Agent 4 for iteration Iter = 2;
-fig = figure(98);clf;
-ax  = axes;
-plot(ax,udata(7,:),'*b')
-hold on
-for i = 1:length(upinv(7,:))
-    plot(ax,(Iter+1)*i,upinv(7,i),'xr','linewidth',5);
-end
+figure('Name', 'Relative in y', 'NumberTitle', 'off')
+subplot(3,1,1)
+plot(1:Tot+1,z(2,:),1:Tot+1,z(4,:),1:Tot+1,z(6,:),1:Tot+1,z(8,:),'linewidth',1.8)
+yline(0,'--k');
+legend('$q_y^1$','$q_y^2$','$q_y^3$','$q_y^4$','fontsize',12,'interpreter','latex')
+xlim([1 Tot+1])
+xlabel('time-steps','fontsize',12)
+ylabel('y-axis','fontsize',12)
+title('Relative positions')
 grid on
-xlabel('Time/ iterations')
-ylabel('Control input of Agent 4')
-legend('Distributed approach','Centralized solution','fontsize',12,'location','southwest');
-xlim([0 200])
-% create a new axes object (you could also get the active axes object via 'gca')
-% define Name-Value pairs for the zoom_plot function:
-% Name-Value pairs for the axes:
-options.axes.Names = {'Position','XLim'};
-options.axes.Values = {[.5 .4 .3 .3],[20,40]};
-% Name-Value pairs for the rectangle:
-options.rectangle.Names = {};
-options.rectangle.Values = {};
-% Name-Value pairs for the arrows:
-options.arrows.Names = {'HeadLength','HeadWidth'};
-options.arrows.Values = {8,8};
-% call the function with options:
-[zoom_utils] = zoom_plot(ax,options);
+subplot(3,1,2)
+plot(1:Tot+1,z(10,:),1:Tot+1,z(12,:),1:Tot+1,z(14,:),1:Tot+1,z(16,:),'linewidth',1.8)
+yline(0,'--k');
+legend('$w_y^1$','$w_y^2$','$w_y^3$','$w_y^4$','fontsize',12,'interpreter','latex')
+xlim([1 Tot+1])
+xlabel('time-steps','fontsize',12)
+ylabel('y-axis','fontsize',12)
+title('Relative velocities')
+grid on
+subplot(3,1,3)
+plot(1:Tot,a(2,:),1:Tot,a(4,:),1:Tot,a(6,:),1:Tot,a(8,:),'linewidth',1.8)
+yline(0,'--k');
+legend('$a_y^1$','$a_y^2$','$a_y^3$','$a_y^4$','fontsize',12,'interpreter','latex')
+xlim([1 Tot])
+xlabel('time-steps','fontsize',12)
+ylabel('y-axis','fontsize',12)
+title('Relative control inputs')
+grid on
+xlim([1 Tot])
 %%
-% % Agent 1 for iteration Iter = 50;
-% fig = figure(97);clf;
+% % Agent 1 for iteration Iter = 2;
+% fig = figure(99);clf;
 % ax  = axes;
 % plot(ax,udata(1,:),'*b')
 % hold on
@@ -280,13 +256,13 @@ options.arrows.Values = {8,8};
 % grid on
 % xlabel('Time/ iterations')
 % ylabel('Control input of Agent 1')
-% legend('Distributed approach','Centralized solution','fontsize',12,'location','southwest');
-% xlim([0 1000])
+% legend('Distributed approach','Centralized solution','fontsize',12,'location','northeast');
+% xlim([0 200])
 % % create a new axes object (you could also get the active axes object via 'gca')
 % % define Name-Value pairs for the zoom_plot function:
 % % Name-Value pairs for the axes:
 % options.axes.Names = {'Position','XLim'};
-% options.axes.Values = {[.5 .5 .35 .35],[100,220]};
+% options.axes.Values = {[.5 .4 .35 .35],[20,40]};
 % % Name-Value pairs for the rectangle:
 % options.rectangle.Names = {};
 % options.rectangle.Values = {};
@@ -296,8 +272,8 @@ options.arrows.Values = {8,8};
 % % call the function with options:
 % [zoom_utils] = zoom_plot(ax,options);
 % 
-% % Agent 4 for iteration Iter = 50;
-% fig = figure(96);clf;
+% % Agent 4 for iteration Iter = 2;
+% fig = figure(98);clf;
 % ax  = axes;
 % plot(ax,udata(7,:),'*b')
 % hold on
@@ -307,21 +283,75 @@ options.arrows.Values = {8,8};
 % grid on
 % xlabel('Time/ iterations')
 % ylabel('Control input of Agent 4')
-% legend('Distributed approach','Centralized solution','fontsize',12,'location','northwest');
-% xlim([0 1000])
+% legend('Distributed approach','Centralized solution','fontsize',12,'location','southeast');
+% xlim([0 200])
 % % create a new axes object (you could also get the active axes object via 'gca')
 % % define Name-Value pairs for the zoom_plot function:
 % % Name-Value pairs for the axes:
 % options.axes.Names = {'Position','XLim'};
-% options.axes.Values = {[.5 .3 .35 .35],[100,220]};
+% options.axes.Values = {[.5 .4 .3 .3],[20,40]};
 % % Name-Value pairs for the rectangle:
 % options.rectangle.Names = {};
 % options.rectangle.Values = {};
 % % Name-Value pairs for the arrows:
 % options.arrows.Names = {'HeadLength','HeadWidth'};
-% options.arrows.Values = {9,9};
+% options.arrows.Values = {8,8};
 % % call the function with options:
 % [zoom_utils] = zoom_plot(ax,options);
+%%
+% Agent 1 for iteration Iter = 50;
+fig = figure(97);clf;
+ax  = axes;
+plot(ax,udata(1,:),'*b')
+hold on
+for i = 1:length(upinv(1,:))
+    plot(ax,(Iter+1)*i,upinv(1,i),'xr','linewidth',5);
+end
+grid on
+xlabel('Time/ iterations')
+ylabel('Control input of Agent 1')
+legend('Distributed approach','Centralized solution','fontsize',12,'location','southwest');
+xlim([0 1000])
+% create a new axes object (you could also get the active axes object via 'gca')
+% define Name-Value pairs for the zoom_plot function:
+% Name-Value pairs for the axes:
+options.axes.Names = {'Position','XLim'};
+options.axes.Values = {[.5 .5 .35 .35],[100,220]};
+% Name-Value pairs for the rectangle:
+options.rectangle.Names = {};
+options.rectangle.Values = {};
+% Name-Value pairs for the arrows:
+options.arrows.Names = {'HeadLength','HeadWidth'};
+options.arrows.Values = {8,8};
+% call the function with options:
+[zoom_utils] = zoom_plot(ax,options);
+
+% Agent 4 for iteration Iter = 50;
+fig = figure(96);clf;
+ax  = axes;
+plot(ax,udata(7,:),'*b')
+hold on
+for i = 1:length(upinv(7,:))
+    plot(ax,(Iter+1)*i,upinv(7,i),'xr','linewidth',5);
+end
+grid on
+xlabel('Time/ iterations')
+ylabel('Control input of Agent 4')
+legend('Distributed approach','Centralized solution','fontsize',12,'location','northwest');
+xlim([0 1000])
+% create a new axes object (you could also get the active axes object via 'gca')
+% define Name-Value pairs for the zoom_plot function:
+% Name-Value pairs for the axes:
+options.axes.Names = {'Position','XLim'};
+options.axes.Values = {[.5 .3 .35 .35],[100,220]};
+% Name-Value pairs for the rectangle:
+options.rectangle.Names = {};
+options.rectangle.Values = {};
+% Name-Value pairs for the arrows:
+options.arrows.Names = {'HeadLength','HeadWidth'};
+options.arrows.Values = {9,9};
+% call the function with options:
+[zoom_utils] = zoom_plot(ax,options);
 
 
 %% Consensus section
