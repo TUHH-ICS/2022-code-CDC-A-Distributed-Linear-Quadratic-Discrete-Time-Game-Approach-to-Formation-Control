@@ -6,7 +6,7 @@ This repository contains an implementation of the algorithms and simulations des
 > Prima Aditya and Herbert Werner, "A Distributed Linear Quadratic Discrete-Time Game Approach to Multi-Agent Consensus" submitted for CDC 2022
 
 ## Simulation
-The main code `cdc2022.m` contains everything in one file. This distributed framework depends on the predefined communication graph structure. In this case, we took four vertices and six edges as an example. Settings that can be adjusted are the finite time (tf) and the number of prediction horizons (Np)
+The main code `cdc2022.m` contains everything in one file. This distributed frameworkbased on iterative-scheme of steepest descent method. In this case, we took four vertices and four edges as an example. Settings that can be adjusted are the finite time (tf) and the number of prediction horizons (Np)
 
 ## Prerequisites
 The simulation code in this repository was tested in the following environment:
